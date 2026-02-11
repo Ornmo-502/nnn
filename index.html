@@ -1659,6 +1659,114 @@
                 grid-template-columns: 1fr;
             }
         }
+        
+        /* --- أنماط قسم التصنيفات في لوحة التحكم --- */
+        .dashboard-categories-section {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            padding: 25px;
+            border-radius: var(--radius);
+            margin-bottom: 30px;
+            color: white;
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .dashboard-categories-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .dashboard-categories-header h3 {
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0;
+        }
+        
+        .dashboard-categories-header h3 i {
+            color: var(--warning);
+            font-size: 1.8rem;
+        }
+        
+        .dashboard-categories-stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 20px;
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .dashboard-categories-stats span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .dashboard-categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+        
+        .dashboard-category-item {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+        }
+        
+        .dashboard-category-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            border-color: var(--warning);
+        }
+        
+        .dashboard-category-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+        
+        .dashboard-category-name i {
+            color: var(--warning);
+            font-size: 0.9rem;
+        }
+        
+        .dashboard-category-count {
+            background: var(--warning);
+            color: var(--primary-dark);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-categories-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .dashboard-categories-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1868,6 +1976,41 @@
                 </div>
                 
                 <div class="stats-grid" id="statsGrid"></div>
+                
+                <!-- قسم التصنيفات القانونية الـ15 في لوحة التحكم -->
+                <div class="dashboard-categories-section" id="dashboardCategoriesSection">
+                    <div class="dashboard-categories-header">
+                        <h3>
+                            <i class="fas fa-tags"></i>
+                            التصنيفات القانونية (15 تصنيف)
+                        </h3>
+                        <div class="dashboard-categories-stats">
+                            <span>
+                                <i class="fas fa-book"></i>
+                                إجمالي الكتب: <span id="dashboardTotalBooks">0</span>
+                            </span>
+                            <span>
+                                <i class="fas fa-check-circle"></i>
+                                متاح: <span id="dashboardAvailableBooks">0</span>
+                            </span>
+                            <span>
+                                <i class="fas fa-hand-holding"></i>
+                                مستعار: <span id="dashboardBorrowedBooks">0</span>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-categories-grid" id="dashboardCategoriesGrid">
+                        <!-- سيتم تعبئة التصنيفات عبر JavaScript -->
+                    </div>
+                    
+                    <div style="margin-top: 20px; text-align: left;">
+                        <button class="btn-sm btn-primary" onclick="switchTab('books')" style="background: var(--warning); color: var(--primary-dark); border: none;">
+                            <i class="fas fa-arrow-left"></i>
+                            إدارة الكتب والتصنيفات
+                        </button>
+                    </div>
+                </div>
                 
                 <div class="search-box">
                     <input type="text" class="search-input" id="searchInput" 
@@ -2347,7 +2490,7 @@
                 
                 <h4>أقسام النظام:</h4>
                 <ul style="margin-right: 20px; margin-bottom: 20px;">
-                    <li><strong>الرئيسية:</strong> نظرة عامة وإحصائيات سريعة</li>
+                    <li><strong>الرئيسية:</strong> نظرة عامة وإحصائيات سريعة مع عرض التصنيفات القانونية الـ15</li>
                     <li><strong>الكتب:</strong> إدارة وعرض جميع الكتب في المكتبة مع 15 تصنيفاً قانونياً</li>
                     <li><strong>الطلاب:</strong> إدارة سجلات الطلاب المسجلين</li>
                     <li><strong>الإعارة:</strong> نظام إعارة الكتب وتتبعها</li>
@@ -2628,18 +2771,66 @@
         }
 
         // ============================================
+        // وظائف التصنيفات القانونية في لوحة التحكم
+        // ============================================
+        function loadDashboardCategories() {
+            const categoriesGrid = document.getElementById('dashboardCategoriesGrid');
+            if (!categoriesGrid) return;
+            
+            // تحديث الإحصائيات في لوحة التحكم
+            const totalBooks = libraryData.books.length;
+            const availableBooks = libraryData.books.filter(b => b.status === 'متاح').reduce((total, book) => total + (book.copies || 1), 0);
+            const borrowedBooks = libraryData.books.filter(b => b.status === 'مستعار').length;
+            
+            document.getElementById('dashboardTotalBooks').textContent = totalBooks;
+            document.getElementById('dashboardAvailableBooks').textContent = availableBooks;
+            document.getElementById('dashboardBorrowedBooks').textContent = borrowedBooks;
+            
+            // إنشاء قائمة التصنيفات مع عدد الكتب في كل تصنيف
+            let categoriesHTML = '';
+            
+            // إضافة كل التصنيفات (الكل) كخيار أول
+            categoriesHTML += `
+                <div class="dashboard-category-item" onclick="switchTab('books'); setTimeout(() => filterByCategory('all'), 100);">
+                    <span class="dashboard-category-name">
+                        <i class="fas fa-books"></i>
+                        كل الكتب
+                    </span>
+                    <span class="dashboard-category-count">${totalBooks}</span>
+                </div>
+            `;
+            
+            // إضافة التصنيفات القانونية الـ14 (باستثناء "كل الكتب")
+            LEGAL_CATEGORIES.forEach(category => {
+                const count = libraryData.books.filter(book => book.category === category).length;
+                categoriesHTML += `
+                    <div class="dashboard-category-item" onclick="switchTab('books'); setTimeout(() => filterByCategory('${category}'), 100);">
+                        <span class="dashboard-category-name">
+                            <i class="fas fa-tag"></i>
+                            ${category}
+                        </span>
+                        <span class="dashboard-category-count">${count}</span>
+                    </div>
+                `;
+            });
+            
+            categoriesGrid.innerHTML = categoriesHTML;
+        }
+
+        // ============================================
         // وظائف التصنيفات القانونية
         // ============================================
         function filterByCategory(category) {
             currentCategory = category;
             
-            // تحديث حالة الأزرار
+            // تحديث حالة الأزرار في قسم الكتب
             document.querySelectorAll('.category-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             
             if (category === 'all') {
-                event.target.classList.add('active');
+                const allBtn = Array.from(document.querySelectorAll('.category-btn')).find(btn => btn.textContent.includes('كل الكتب'));
+                if (allBtn) allBtn.classList.add('active');
             } else {
                 const buttons = document.querySelectorAll('.category-btn');
                 buttons.forEach(btn => {
@@ -2759,7 +2950,7 @@
 
         function updateCategoryStats() {
             const totalBooks = libraryData.books.length;
-            const availableBooks = libraryData.books.filter(b => b.status === 'متاح').length;
+            const availableBooks = libraryData.books.filter(b => b.status === 'متاح').reduce((total, book) => total + (book.copies || 1), 0);
             const borrowedBooks = libraryData.books.filter(b => b.status === 'مستعار').length;
             
             const totalBooksSpan = document.getElementById('totalBooksCount');
@@ -2769,6 +2960,9 @@
             if (totalBooksSpan) totalBooksSpan.textContent = totalBooks;
             if (availableBooksSpan) availableBooksSpan.textContent = availableBooks;
             if (borrowedBooksSpan) borrowedBooksSpan.textContent = borrowedBooks;
+            
+            // تحديث إحصائيات لوحة التحكم أيضاً
+            loadDashboardCategories();
         }
 
         // ============================================
@@ -3039,6 +3233,7 @@
             switch(tabName) {
                 case 'dashboard':
                     updateDashboard();
+                    loadDashboardCategories(); // تحديث التصنيفات في لوحة التحكم
                     break;
                 case 'books':
                     loadBooks();
@@ -3947,6 +4142,7 @@
             closeModal();
             loadBooks();
             updateDashboard();
+            loadDashboardCategories(); // تحديث التصنيفات في لوحة التحكم
             
             showNotification('تمت إضافة الكتاب بنجاح', 'success');
             logActivity('add_book', `إضافة كتاب "${title}" (تصنيف: ${category})`);
@@ -4099,6 +4295,7 @@
             saveData();
             closeModal();
             loadBooks();
+            loadDashboardCategories(); // تحديث التصنيفات في لوحة التحكم
             
             showNotification('تم تحديث الكتاب بنجاح', 'success');
             logActivity('edit_book', `تعديل كتاب "${title}"`);
@@ -4117,6 +4314,7 @@
                             saveData();
                             loadBooks();
                             updateDashboard();
+                            loadDashboardCategories(); // تحديث التصنيفات في لوحة التحكم
                             
                             showNotification('تم حذف الكتاب بنجاح', 'success');
                             logActivity('delete_book', `حذف كتاب "${bookTitle}"`);
@@ -5292,6 +5490,7 @@
             closeModal();
             loadBorrow();
             updateDashboard();
+            loadDashboardCategories(); // تحديث التصنيفات في لوحة التحكم
             
             const borrowerTypeName = borrowerType === 'professor' ? 'أستاذ' : 'طالب';
             showNotification('تمت إضافة الإعارة بنجاح', 'success');
@@ -5492,6 +5691,7 @@
             saveData();
             closeModal();
             loadBorrow();
+            loadDashboardCategories(); // تحديث التصنيفات في لوحة التحكم
             
             showNotification('تم تحديث بيانات الإعارة بنجاح', 'success');
             logActivity('edit_borrow', `تعديل إعارة كتاب "${borrow.bookTitle}"`);
@@ -5529,6 +5729,7 @@
             saveData();
             loadBorrow();
             updateDashboard();
+            loadDashboardCategories(); // تحديث التصنيفات في لوحة التحكم
             
             const borrowerType = borrow.borrowerType === 'professor' ? 'أستاذ' : 'طالب';
             showNotification('تم إرجاع الكتاب بنجاح', 'success');
@@ -5570,6 +5771,7 @@
                             saveData();
                             loadBorrow();
                             updateDashboard();
+                            loadDashboardCategories(); // تحديث التصنيفات في لوحة التحكم
                             
                             showNotification('تم حذف الإعارة بنجاح', 'success');
                             logActivity('delete_borrow', `حذف إعارة كتاب "${borrow.bookTitle}"`);
@@ -6008,6 +6210,7 @@
                                     saveData();
                                     updateDashboard();
                                     loadTabContent(currentTab);
+                                    loadDashboardCategories(); // تحديث التصنيفات في لوحة التحكم
                                     
                                     showNotification('تم استيراد البيانات بنجاح', 'success');
                                     logActivity('import', 'استيراد جميع بيانات النظام');
@@ -6160,6 +6363,7 @@
                         saveData();
                         updateDashboard();
                         loadTabContent(currentTab);
+                        loadDashboardCategories(); // تحديث التصنيفات في لوحة التحكم
                         
                         showNotification('تم مسح جميع البيانات بنجاح', 'success');
                         logActivity('reset', 'مسح جميع بيانات النظام');
@@ -6812,6 +7016,7 @@
         console.log('👨‍🏫 إضافة إمكانية إعارة الكتب للأساتذة');
         console.log('👤 إضافة المشرفين على التسليم عند الإعارة');
         console.log('📱 تصميم متجاوب يعمل على جميع الأجهزة');
+        console.log('🏠 إضافة التصنيفات القانونية الـ15 في لوحة التحكم');
         console.log('👤 النظام جاهز للاستخدام');
     </script>
 </body>
