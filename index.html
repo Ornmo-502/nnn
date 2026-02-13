@@ -1251,6 +1251,12 @@
             border-color: var(--secondary);
         }
         
+        .import-btn.categories {
+            color: var(--secondary);
+            background: rgba(76, 175, 80, 0.1);
+            border-color: var(--secondary);
+        }
+        
         /* حقل الملاحظات */
         .notes-section {
             margin-top: 20px;
@@ -1767,6 +1773,125 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* أنماط إدارة التصنيفات */
+        .categories-management-section {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            border: 2px solid var(--primary-light);
+        }
+        
+        .categories-management-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .categories-management-header h3 {
+            color: var(--primary);
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0;
+        }
+        
+        .categories-management-header h3 i {
+            color: var(--success);
+        }
+        
+        .categories-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+        
+        .category-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s;
+            background: var(--light);
+        }
+        
+        .category-item:hover {
+            background: var(--hover-bg);
+        }
+        
+        .category-item:last-child {
+            border-bottom: none;
+        }
+        
+        .category-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+        
+        .category-icon {
+            color: var(--secondary);
+            font-size: 1.2rem;
+        }
+        
+        .category-details {
+            flex: 1;
+        }
+        
+        .category-name {
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+        
+        .category-meta {
+            display: flex;
+            gap: 20px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        .category-books-count {
+            background: var(--primary-light);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        
+        .category-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .add-category-form {
+            background: var(--hover-bg);
+            padding: 20px;
+            border-radius: var(--radius);
+            margin-top: 20px;
+        }
+        
+        .add-category-form h4 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
     </style>
 </head>
 <body>
@@ -1938,6 +2063,9 @@
             <button class="tab" data-tab="reports">
                 <i class="fas fa-chart-bar"></i> التقارير
             </button>
+            <button class="tab" data-tab="categories">
+                <i class="fas fa-tags"></i> التصنيفات
+            </button>
             <button class="tab" data-tab="settings">
                 <i class="fas fa-cog"></i> إعدادات المطور
             </button>
@@ -1977,12 +2105,12 @@
                 
                 <div class="stats-grid" id="statsGrid"></div>
                 
-                <!-- قسم التصنيفات القانونية الـ15 في لوحة التحكم -->
+                <!-- قسم التصنيفات القانونية في لوحة التحكم -->
                 <div class="dashboard-categories-section" id="dashboardCategoriesSection">
                     <div class="dashboard-categories-header">
                         <h3>
                             <i class="fas fa-tags"></i>
-                            التصنيفات القانونية (15 تصنيف)
+                            التصنيفات القانونية
                         </h3>
                         <div class="dashboard-categories-stats">
                             <span>
@@ -1997,6 +2125,10 @@
                                 <i class="fas fa-hand-holding"></i>
                                 مستعار: <span id="dashboardBorrowedBooks">0</span>
                             </span>
+                            <span>
+                                <i class="fas fa-tags"></i>
+                                التصنيفات: <span id="dashboardTotalCategories">0</span>
+                            </span>
                         </div>
                     </div>
                     
@@ -2004,10 +2136,14 @@
                         <!-- سيتم تعبئة التصنيفات عبر JavaScript -->
                     </div>
                     
-                    <div style="margin-top: 20px; text-align: left;">
+                    <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
                         <button class="btn-sm btn-primary" onclick="switchTab('books')" style="background: var(--warning); color: var(--primary-dark); border: none;">
                             <i class="fas fa-arrow-left"></i>
                             إدارة الكتب والتصنيفات
+                        </button>
+                        <button class="btn-sm btn-success" onclick="switchTab('categories')" style="background: var(--success); color: white; border: none;">
+                            <i class="fas fa-plus-circle"></i>
+                            إضافة تصنيف جديد
                         </button>
                     </div>
                 </div>
@@ -2035,9 +2171,9 @@
                         <i class="fas fa-chalkboard-teacher"></i>
                         <span>إضافة أستاذ</span>
                     </div>
-                    <div class="quick-btn" onclick="generateReport('detailed')">
-                        <i class="fas fa-print"></i>
-                        <span>تقرير مفصل</span>
+                    <div class="quick-btn" onclick="switchTab('categories')">
+                        <i class="fas fa-tags"></i>
+                        <span>إدارة التصنيفات</span>
                     </div>
                     <div class="quick-btn" onclick="openDevSettings()">
                         <i class="fas fa-cog"></i>
@@ -2060,7 +2196,7 @@
                     </div>
                 </div>
                 
-                <!-- قسم التصنيفات المقترحة - 15 تصنيف قانوني -->
+                <!-- قسم التصنيفات -->
                 <div class="category-filter-section">
                     <div class="category-filter-header">
                         <h4>
@@ -2075,57 +2211,19 @@
                     </div>
                     
                     <div class="category-filter-grid" id="categoryFilterGrid">
-                        <button class="category-btn active" onclick="filterByCategory('all')">
-                            <i class="fas fa-books"></i> كل الكتب
-                        </button>
-                        <button class="category-btn" onclick="filterByCategory('الرسائل والأطاريح الجامعية')">
-                            <i class="fas fa-graduation-cap"></i> الرسائل والأطاريح الجامعية
-                        </button>
-                        <button class="category-btn" onclick="filterByCategory('العلوم السياسية')">
-                            <i class="fas fa-globe"></i> العلوم السياسية
-                        </button>
-                        <button class="category-btn" onclick="filterByCategory('القانون العام')">
-                            <i class="fas fa-balance-scale"></i> القانون العام
-                        </button>
-                        <button class="category-btn" onclick="filterByCategory('القانون الدولي')">
-                            <i class="fas fa-globe-asia"></i> القانون الدولي (يشمل العام والخاص)
-                        </button>
-                        <button class="category-btn" onclick="filterByCategory('القانون الدستوري')">
-                            <i class="fas fa-landmark"></i> القانون الدستوري
-                        </button>
-                        <button class="category-btn" onclick="filterByCategory('القانون الإداري')">
-                            <i class="fas fa-building"></i> القانون الإداري
-                        </button>
-                        <button class="category-btn" onclick="filterByCategory('القانون التجاري')">
-                            <i class="fas fa-chart-line"></i> القانون التجاري
-                        </button>
-                        <button class="category-btn" onclick="filterByCategory('القانون الجنائي')">
-                            <i class="fas fa-gavel"></i> القانون الجنائي (العقوبات والإجراءات الجزائية)
-                        </button>
-                        <button class="category-btn" onclick="filterByCategory('القانون المدني')">
-                            <i class="fas fa-file-signature"></i> القانون المدني
-                        </button>
-                        <button class="category-btn" onclick="filterByCategory('القضاء والمحاكم والأحكام القضائية')">
-                            <i class="fas fa-court"></i> القضاء والمحاكم والأحكام القضائية
-                        </button>
-                        <button class="category-btn" onclick="filterByCategory('أصول القانون والفقه القانوني')">
-                            <i class="fas fa-scroll"></i> أصول القانون والفقه القانوني
-                        </button>
-                        <button class="category-btn" onclick="filterByCategory('حقوق الإنسان والحريات العامة')">
-                            <i class="fas fa-hand-holding-heart"></i> حقوق الإنسان والحريات العامة
-                        </button>
-                        <button class="category-btn" onclick="filterByCategory('التشريعات والأنظمة المحلية')">
-                            <i class="fas fa-file-contract"></i> التشريعات والأنظمة المحلية
-                        </button>
-                        <button class="category-btn" onclick="filterByCategory('متفرقة')">
-                            <i class="fas fa-ellipsis-h"></i> متفرقة
-                        </button>
+                        <!-- سيتم تعبئة التصنيفات عبر JavaScript -->
                     </div>
                     
                     <div class="category-stats" id="categoryStats">
                         <span><i class="fas fa-book"></i> إجمالي الكتب: <span id="totalBooksCount">0</span></span>
                         <span><i class="fas fa-check-circle"></i> متاح: <span id="availableBooksCount">0</span></span>
                         <span><i class="fas fa-hand-holding"></i> مستعار: <span id="borrowedBooksCount">0</span></span>
+                    </div>
+                    
+                    <div style="margin-top: 15px; text-align: left;">
+                        <button class="btn-sm btn-info" onclick="switchTab('categories')">
+                            <i class="fas fa-cog"></i> إدارة التصنيفات
+                        </button>
                     </div>
                 </div>
                 
@@ -2251,6 +2349,80 @@
                 <div id="detailedReports"></div>
             </div>
 
+            <!-- قسم إدارة التصنيفات -->
+            <div class="tab-content" id="categories">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                    <h2><i class="fas fa-tags"></i> إدارة التصنيفات القانونية</h2>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn-sm btn-primary" onclick="printCategories()">
+                            <i class="fas fa-print"></i> طباعة
+                        </button>
+                        <button class="btn-sm btn-success" onclick="showAddCategoryModal()">
+                            <i class="fas fa-plus"></i> إضافة تصنيف جديد
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="categories-management-section">
+                    <div class="categories-management-header">
+                        <h3>
+                            <i class="fas fa-list"></i>
+                            قائمة التصنيفات الحالية
+                        </h3>
+                        <div>
+                            <span id="totalCategoriesCount" style="background: var(--primary); color: white; padding: 5px 15px; border-radius: 20px;">
+                                العدد: 0
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="categories-list" id="categoriesList">
+                        <!-- سيتم تعبئة قائمة التصنيفات عبر JavaScript -->
+                    </div>
+                    
+                    <div class="add-category-form" id="addCategoryForm">
+                        <h4>
+                            <i class="fas fa-plus-circle"></i>
+                            إضافة تصنيف جديد
+                        </h4>
+                        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 250px;">
+                                <label style="display: block; margin-bottom: 8px; font-weight: bold; color: var(--primary);">
+                                    اسم التصنيف الجديد
+                                </label>
+                                <input type="text" id="newCategoryName" class="form-control" placeholder="أدخل اسم التصنيف" required>
+                            </div>
+                            <div style="flex: 1; min-width: 250px;">
+                                <label style="display: block; margin-bottom: 8px; font-weight: bold; color: var(--primary);">
+                                    وصف التصنيف (اختياري)
+                                </label>
+                                <input type="text" id="newCategoryDescription" class="form-control" placeholder="وصف مختصر للتصنيف">
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                            <button onclick="addNewCategory()" class="btn btn-success">
+                                <i class="fas fa-check"></i> إضافة التصنيف
+                            </button>
+                            <button onclick="clearCategoryForm()" class="btn btn-danger">
+                                <i class="fas fa-times"></i> إلغاء
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px; padding: 15px; background: rgba(25, 118, 210, 0.1); border-radius: var(--radius);">
+                        <p style="margin-bottom: 10px; font-weight: bold; color: var(--secondary);">
+                            <i class="fas fa-info-circle"></i> معلومات مهمة:
+                        </p>
+                        <ul style="margin-right: 20px; color: var(--text); line-height: 1.8;">
+                            <li>يمكنك إضافة تصنيفات جديدة في أي وقت.</li>
+                            <li>عند حذف تصنيف، سيتم نقل الكتب المرتبطة به إلى تصنيف "متفرقة".</li>
+                            <li>لا يمكن حذف التصنيفات الأساسية (الـ15 تصنيفاً الأولى).</li>
+                            <li>يمكن تعديل أسماء التصنيفات المضافة.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
             <!-- قسم إعدادات المطور -->
             <div class="tab-content" id="settings">
                 <h2><i class="fas fa-cog"></i> إعدادات المطور</h2>
@@ -2353,6 +2525,12 @@
                         </button>
                     </div>
                     <div class="settings-item">
+                        <label>تصدير التصنيفات إلى Excel</label>
+                        <button class="btn btn-success" onclick="exportCategoriesToExcel()">
+                            <i class="fas fa-file-excel"></i> تصدير التصنيفات
+                        </button>
+                    </div>
+                    <div class="settings-item">
                         <label>استيراد من Excel</label>
                         <button class="btn btn-warning" onclick="importFromExcel()">
                             <i class="fas fa-file-import"></i> استيراد Excel
@@ -2395,11 +2573,11 @@
                     <h3><i class="fas fa-info-circle"></i> معلومات النظام</h3>
                     <div class="settings-item">
                         <label>إصدار النظام</label>
-                        <span>2.7.0</span>
+                        <span>3.0.0</span>
                     </div>
                     <div class="settings-item">
                         <label>تاريخ الإنشاء</label>
-                        <span>يناير 2024</span>
+                        <span>يناير 2025</span>
                     </div>
                     <div class="settings-item">
                         <label>المطور</label>
@@ -2412,6 +2590,10 @@
                                 <i class="fab fa-telegram"></i> Ornmo_5_bot
                             </a>
                         </span>
+                    </div>
+                    <div class="settings-item">
+                        <label>عدد التصنيفات</label>
+                        <span id="systemCategoriesCount">0</span>
                     </div>
                     <div class="settings-item">
                         <label>حجم البيانات المحفوظة</label>
@@ -2465,6 +2647,82 @@
         </div>
     </div>
 
+    <!-- مودال إضافة تصنيف -->
+    <div id="addCategoryModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; padding: 20px;">
+        <div style="background: white; border-radius: 15px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #f8f9fa;">
+                <h2 style="color: var(--primary); margin: 0; font-size: 1.4rem;">
+                    <i class="fas fa-plus-circle"></i> إضافة تصنيف جديد
+                </h2>
+                <button onclick="closeAddCategoryModal()" style="background: none; border: none; font-size: 24px; color: var(--accent); cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">×</button>
+            </div>
+            
+            <div id="addCategoryModalContent" style="padding: 20px;">
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: bold; color: var(--primary);">
+                        اسم التصنيف
+                    </label>
+                    <input type="text" id="modalNewCategoryName" class="form-control" placeholder="أدخل اسم التصنيف" required>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: bold; color: var(--primary);">
+                        وصف التصنيف (اختياري)
+                    </label>
+                    <input type="text" id="modalNewCategoryDescription" class="form-control" placeholder="وصف مختصر للتصنيف">
+                </div>
+                
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="modalAddCategory()" class="btn btn-success" style="flex: 1;">
+                        <i class="fas fa-check"></i> إضافة
+                    </button>
+                    <button onclick="closeAddCategoryModal()" class="btn btn-danger" style="flex: 1;">
+                        <i class="fas fa-times"></i> إلغاء
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال تعديل تصنيف -->
+    <div id="editCategoryModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; padding: 20px;">
+        <div style="background: white; border-radius: 15px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #f8f9fa;">
+                <h2 style="color: var(--primary); margin: 0; font-size: 1.4rem;">
+                    <i class="fas fa-edit"></i> تعديل التصنيف
+                </h2>
+                <button onclick="closeEditCategoryModal()" style="background: none; border: none; font-size: 24px; color: var(--accent); cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">×</button>
+            </div>
+            
+            <div id="editCategoryModalContent" style="padding: 20px;">
+                <input type="hidden" id="editCategoryId">
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: bold; color: var(--primary);">
+                        اسم التصنيف
+                    </label>
+                    <input type="text" id="editCategoryName" class="form-control" placeholder="أدخل اسم التصنيف" required>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: bold; color: var(--primary);">
+                        وصف التصنيف (اختياري)
+                    </label>
+                    <input type="text" id="editCategoryDescription" class="form-control" placeholder="وصف مختصر للتصنيف">
+                </div>
+                
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="modalUpdateCategory()" class="btn btn-success" style="flex: 1;">
+                        <i class="fas fa-save"></i> حفظ التغييرات
+                    </button>
+                    <button onclick="closeEditCategoryModal()" class="btn btn-danger" style="flex: 1;">
+                        <i class="fas fa-times"></i> إلغاء
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- مودال المساعدة -->
     <div id="helpModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; padding: 20px;">
         <div style="background: white; border-radius: 15px; width: 90%; max-width: 700px; max-height: 90vh; overflow-y: auto; padding: 20px;">
@@ -2482,50 +2740,20 @@
                 <h4>الخطوات الأولى:</h4>
                 <ol style="margin-right: 20px; margin-bottom: 20px;">
                     <li><strong>تسجيل الدخول:</strong> استخدم بيانات الدخول التي تم تزويدك بها</li>
-                    <li><strong>إضافة الكتب:</strong> انتقل إلى قسم الكتب وأضف كتب المكتبة مع التصنيفات القانونية الـ15 الجديدة</li>
+                    <li><strong>إضافة التصنيفات:</strong> انتقل إلى قسم التصنيفات وأضف التصنيفات التي تحتاجها</li>
+                    <li><strong>إضافة الكتب:</strong> انتقل إلى قسم الكتب وأضف كتب المكتبة مع التصنيفات</li>
                     <li><strong>تسجيل الطلاب:</strong> أضف الطلاب المسجلين في القسم</li>
                     <li><strong>إضافة الأساتذة:</strong> سجل بيانات أساتذة القسم</li>
                     <li><strong>بدء الإعارة:</strong> استخدم قسم الإعارة لإدارة استعارة الكتب</li>
                 </ol>
                 
-                <h4>أقسام النظام:</h4>
-                <ul style="margin-right: 20px; margin-bottom: 20px;">
-                    <li><strong>الرئيسية:</strong> نظرة عامة وإحصائيات سريعة مع عرض التصنيفات القانونية الـ15</li>
-                    <li><strong>الكتب:</strong> إدارة وعرض جميع الكتب في المكتبة مع 15 تصنيفاً قانونياً</li>
-                    <li><strong>الطلاب:</strong> إدارة سجلات الطلاب المسجلين</li>
-                    <li><strong>الإعارة:</strong> نظام إعارة الكتب وتتبعها</li>
-                    <li><strong>الأساتذة:</strong> قاعدة بيانات أساتذة القسم</li>
-                    <li><strong>التقارير:</strong> إحصائيات وتقارير مفصلة</li>
-                    <li><strong>إعدادات المطور:</strong> تخصيص النظام وإدارة البيانات</li>
-                </ul>
-                
-                <h4>المميزات الجديدة في قسم الكتب:</h4>
+                <h4>إدارة التصنيفات:</h4>
                 <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <p>✓ <strong>15 تصنيفاً قانونياً</strong> للبحث والتصنيف</p>
-                    <p>✓ قائمة منسدلة بالتصنيفات القانونية عند إضافة الكتب</p>
-                    <p>✓ حقل <strong>عدد النسخ</strong> لكل كتاب</p>
-                    <p>✓ فهرسة وتصفية الكتب حسب التصنيف</p>
-                    <p>✓ إحصائيات متقدمة حسب التصنيفات</p>
-                    <p>✓ بحث متكامل مع التصنيفات</p>
-                </div>
-                
-                <h4>قائمة التصنيفات القانونية الـ15:</h4>
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-                    <p>1. كل الكتب (للبحث العام)</p>
-                    <p>2. الرسائل والأطاريح الجامعية</p>
-                    <p>3. العلوم السياسية</p>
-                    <p>4. القانون العام</p>
-                    <p>5. القانون الدولي (يشمل العام والخاص)</p>
-                    <p>6. القانون الدستوري</p>
-                    <p>7. القانون الإداري</p>
-                    <p>8. القانون التجاري</p>
-                    <p>9. القانون الجنائي</p>
-                    <p>10. القانون المدني</p>
-                    <p>11. القضاء والمحاكم والأحكام القضائية</p>
-                    <p>12. أصول القانون والفقه القانوني</p>
-                    <p>13. حقوق الإنسان والحريات العامة</p>
-                    <p>14. التشريعات والأنظمة المحلية</p>
-                    <p>15. متفرقة</p>
+                    <p>✓ يمكنك إضافة تصنيفات جديدة في أي وقت</p>
+                    <p>✓ النظام يحتوي على 15 تصنيفاً أساسياً لا يمكن حذفها</p>
+                    <p>✓ يمكن تعديل أسماء التصنيفات المضافة</p>
+                    <p>✓ عند حذف تصنيف، تنتقل الكتب إلى تصنيف "متفرقة"</p>
+                    <p>✓ يتم عرض التصنيفات في جميع أقسام النظام</p>
                 </div>
                 
                 <p style="text-align: center; color: var(--primary); font-weight: bold; margin-top: 20px;">
@@ -2539,9 +2767,9 @@
 
     <script>
         // ============================================
-        // قائمة التصنيفات القانونية الـ15
+        // قائمة التصنيفات القانونية الأساسية
         // ============================================
-        const LEGAL_CATEGORIES = [
+        const BASE_CATEGORIES = [
             'الرسائل والأطاريح الجامعية',
             'العلوم السياسية',
             'القانون العام',
@@ -2567,6 +2795,7 @@
             professors: [],
             borrow: [],
             activities: [],
+            categories: [],
             settings: {
                 fontSize: 16,
                 fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
@@ -2579,6 +2808,19 @@
                 firstUse: true
             }
         };
+
+        // تهيئة التصنيفات الأساسية
+        function initializeCategories() {
+            if (!libraryData.categories || libraryData.categories.length === 0) {
+                libraryData.categories = BASE_CATEGORIES.map((name, index) => ({
+                    id: index + 1,
+                    name: name,
+                    description: '',
+                    isBase: true,
+                    addedDate: new Date().toISOString().split('T')[0]
+                }));
+            }
+        }
 
         // متغير لتتبع التصنيف المحدد حالياً
         let currentCategory = 'all';
@@ -2597,6 +2839,7 @@
         let confirmCallback = null;
         let imageDataUrl = null;
         let retrievedData = null;
+        let editingCategoryId = null;
         let paginationState = {
             currentPage: 1,
             itemsPerPage: 10,
@@ -2634,6 +2877,7 @@
                 document.getElementById('loginContainer').style.display = 'block';
                 
                 loadSavedData();
+                initializeCategories();
                 setupEventListeners();
                 checkRetrievalLink();
                 
@@ -2676,6 +2920,12 @@
                     libraryData.settings = {...libraryData.settings, ...parsedSettings};
                 }
                 
+                // تهيئة التصنيفات إذا لم تكن موجودة
+                if (!libraryData.categories) {
+                    libraryData.categories = [];
+                }
+                
+                initializeCategories();
                 applySettings();
                 
             } catch (error) {
@@ -2771,7 +3021,7 @@
         }
 
         // ============================================
-        // وظائف التصنيفات القانونية في لوحة التحكم
+        // وظائف التصنيفات في لوحة التحكم
         // ============================================
         function loadDashboardCategories() {
             const categoriesGrid = document.getElementById('dashboardCategoriesGrid');
@@ -2781,10 +3031,12 @@
             const totalBooks = libraryData.books.length;
             const availableBooks = libraryData.books.filter(b => b.status === 'متاح').reduce((total, book) => total + (book.copies || 1), 0);
             const borrowedBooks = libraryData.books.filter(b => b.status === 'مستعار').length;
+            const totalCategories = libraryData.categories.length;
             
             document.getElementById('dashboardTotalBooks').textContent = totalBooks;
             document.getElementById('dashboardAvailableBooks').textContent = availableBooks;
             document.getElementById('dashboardBorrowedBooks').textContent = borrowedBooks;
+            document.getElementById('dashboardTotalCategories').textContent = totalCategories;
             
             // إنشاء قائمة التصنيفات مع عدد الكتب في كل تصنيف
             let categoriesHTML = '';
@@ -2800,14 +3052,14 @@
                 </div>
             `;
             
-            // إضافة التصنيفات القانونية الـ14 (باستثناء "كل الكتب")
-            LEGAL_CATEGORIES.forEach(category => {
-                const count = libraryData.books.filter(book => book.category === category).length;
+            // إضافة جميع التصنيفات
+            libraryData.categories.forEach(category => {
+                const count = libraryData.books.filter(book => book.category === category.name).length;
                 categoriesHTML += `
-                    <div class="dashboard-category-item" onclick="switchTab('books'); setTimeout(() => filterByCategory('${category}'), 100);">
+                    <div class="dashboard-category-item" onclick="switchTab('books'); setTimeout(() => filterByCategory('${category.name}'), 100);">
                         <span class="dashboard-category-name">
                             <i class="fas fa-tag"></i>
-                            ${category}
+                            ${category.name}
                         </span>
                         <span class="dashboard-category-count">${count}</span>
                     </div>
@@ -2818,27 +3070,279 @@
         }
 
         // ============================================
-        // وظائف التصنيفات القانونية
+        // وظائف إدارة التصنيفات
         // ============================================
+        function loadCategories() {
+            const categoriesList = document.getElementById('categoriesList');
+            const totalCategoriesSpan = document.getElementById('totalCategoriesCount');
+            const systemCategoriesSpan = document.getElementById('systemCategoriesCount');
+            
+            if (!categoriesList) return;
+            
+            if (libraryData.categories.length === 0) {
+                categoriesList.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-light);">
+                        <i class="fas fa-tags" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <h3>لا توجد تصنيفات</h3>
+                        <p>قم بإضافة تصنيف جديد باستخدام النموذج أدناه</p>
+                    </div>
+                `;
+            } else {
+                categoriesList.innerHTML = libraryData.categories.map(category => {
+                    const booksCount = libraryData.books.filter(book => book.category === category.name).length;
+                    const isBase = category.isBase || BASE_CATEGORIES.includes(category.name);
+                    
+                    return `
+                        <div class="category-item">
+                            <div class="category-info">
+                                <i class="fas fa-tag category-icon"></i>
+                                <div class="category-details">
+                                    <div class="category-name">
+                                        ${category.name}
+                                        ${isBase ? '<span style="background: var(--primary); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; margin-right: 10px;">أساسي</span>' : ''}
+                                    </div>
+                                    <div class="category-meta">
+                                        <span><i class="fas fa-book"></i> ${booksCount} كتاب</span>
+                                        ${category.description ? `<span><i class="fas fa-info-circle"></i> ${category.description}</span>` : ''}
+                                        <span><i class="fas fa-calendar"></i> ${category.addedDate || 'غير محدد'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="category-actions">
+                                ${!isBase ? `
+                                    <button class="btn-sm btn-primary" onclick="showEditCategoryModal('${category.id}')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-sm btn-danger" onclick="deleteCategory('${category.id}')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                ` : `
+                                    <button class="btn-sm btn-primary" style="opacity: 0.5; cursor: not-allowed;" disabled>
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-sm btn-danger" style="opacity: 0.5; cursor: not-allowed;" disabled>
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                `}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            if (totalCategoriesSpan) {
+                totalCategoriesSpan.textContent = `العدد: ${libraryData.categories.length}`;
+            }
+            
+            if (systemCategoriesSpan) {
+                systemCategoriesSpan.textContent = libraryData.categories.length;
+            }
+            
+            // تحديث قائمة التصنيفات في قسم الكتب
+            updateCategoryFilterGrid();
+            
+            // تحديث التصنيفات في لوحة التحكم
+            loadDashboardCategories();
+        }
+
+        function updateCategoryFilterGrid() {
+            const filterGrid = document.getElementById('categoryFilterGrid');
+            if (!filterGrid) return;
+            
+            let html = `
+                <button class="category-btn ${currentCategory === 'all' ? 'active' : ''}" onclick="filterByCategory('all')">
+                    <i class="fas fa-books"></i> كل الكتب
+                </button>
+            `;
+            
+            libraryData.categories.forEach(category => {
+                html += `
+                    <button class="category-btn ${currentCategory === category.name ? 'active' : ''}" onclick="filterByCategory('${category.name}')">
+                        <i class="fas fa-tag"></i> ${category.name}
+                    </button>
+                `;
+            });
+            
+            filterGrid.innerHTML = html;
+        }
+
+        function showAddCategoryModal() {
+            document.getElementById('modalNewCategoryName').value = '';
+            document.getElementById('modalNewCategoryDescription').value = '';
+            document.getElementById('addCategoryModal').style.display = 'flex';
+        }
+
+        function closeAddCategoryModal() {
+            document.getElementById('addCategoryModal').style.display = 'none';
+        }
+
+        function showEditCategoryModal(categoryId) {
+            const category = libraryData.categories.find(c => c.id == categoryId);
+            if (!category) return;
+            
+            editingCategoryId = categoryId;
+            document.getElementById('editCategoryName').value = category.name;
+            document.getElementById('editCategoryDescription').value = category.description || '';
+            document.getElementById('editCategoryModal').style.display = 'flex';
+        }
+
+        function closeEditCategoryModal() {
+            document.getElementById('editCategoryModal').style.display = 'none';
+            editingCategoryId = null;
+        }
+
+        function modalAddCategory() {
+            const name = document.getElementById('modalNewCategoryName').value.trim();
+            if (!name) {
+                showNotification('الرجاء إدخال اسم التصنيف', 'error');
+                return;
+            }
+            
+            // التحقق من عدم وجود تصنيف بنفس الاسم
+            if (libraryData.categories.some(c => c.name === name)) {
+                showNotification('يوجد تصنيف بنفس الاسم بالفعل', 'error');
+                return;
+            }
+            
+            const newCategory = {
+                id: Date.now(),
+                name: name,
+                description: document.getElementById('modalNewCategoryDescription').value.trim(),
+                isBase: false,
+                addedDate: new Date().toISOString().split('T')[0]
+            };
+            
+            libraryData.categories.push(newCategory);
+            saveData();
+            
+            closeAddCategoryModal();
+            loadCategories();
+            
+            showNotification('تم إضافة التصنيف بنجاح', 'success');
+            logActivity('add_category', `إضافة تصنيف جديد: ${name}`);
+        }
+
+        function addNewCategory() {
+            const name = document.getElementById('newCategoryName').value.trim();
+            if (!name) {
+                showNotification('الرجاء إدخال اسم التصنيف', 'error');
+                return;
+            }
+            
+            if (libraryData.categories.some(c => c.name === name)) {
+                showNotification('يوجد تصنيف بنفس الاسم بالفعل', 'error');
+                return;
+            }
+            
+            const newCategory = {
+                id: Date.now(),
+                name: name,
+                description: document.getElementById('newCategoryDescription').value.trim(),
+                isBase: false,
+                addedDate: new Date().toISOString().split('T')[0]
+            };
+            
+            libraryData.categories.push(newCategory);
+            saveData();
+            
+            document.getElementById('newCategoryName').value = '';
+            document.getElementById('newCategoryDescription').value = '';
+            loadCategories();
+            
+            showNotification('تم إضافة التصنيف بنجاح', 'success');
+            logActivity('add_category', `إضافة تصنيف جديد: ${name}`);
+        }
+
+        function clearCategoryForm() {
+            document.getElementById('newCategoryName').value = '';
+            document.getElementById('newCategoryDescription').value = '';
+        }
+
+        function modalUpdateCategory() {
+            if (!editingCategoryId) return;
+            
+            const newName = document.getElementById('editCategoryName').value.trim();
+            if (!newName) {
+                showNotification('الرجاء إدخال اسم التصنيف', 'error');
+                return;
+            }
+            
+            const category = libraryData.categories.find(c => c.id == editingCategoryId);
+            if (!category) return;
+            
+            // التحقق من عدم وجود تصنيف آخر بنفس الاسم
+            if (libraryData.categories.some(c => c.id != editingCategoryId && c.name === newName)) {
+                showNotification('يوجد تصنيف بنفس الاسم بالفعل', 'error');
+                return;
+            }
+            
+            const oldName = category.name;
+            category.name = newName;
+            category.description = document.getElementById('editCategoryDescription').value.trim();
+            
+            // تحديث تصنيف الكتب المرتبطة بهذا التصنيف
+            libraryData.books.forEach(book => {
+                if (book.category === oldName) {
+                    book.category = newName;
+                }
+            });
+            
+            saveData();
+            closeEditCategoryModal();
+            loadCategories();
+            
+            showNotification('تم تحديث التصنيف بنجاح', 'success');
+            logActivity('edit_category', `تعديل تصنيف: ${oldName} -> ${newName}`);
+        }
+
+        function deleteCategory(categoryId) {
+            const category = libraryData.categories.find(c => c.id == categoryId);
+            if (!category) return;
+            
+            // منع حذف التصنيفات الأساسية
+            if (category.isBase || BASE_CATEGORIES.includes(category.name)) {
+                showNotification('لا يمكن حذف التصنيفات الأساسية', 'error');
+                return;
+            }
+            
+            showConfirmModal(
+                'حذف التصنيف',
+                `هل أنت متأكد من حذف تصنيف "${category.name}"؟ سيتم نقل الكتب المرتبطة به إلى تصنيف "متفرقة".`,
+                function(result) {
+                    if (result) {
+                        // نقل الكتب إلى تصنيف "متفرقة"
+                        libraryData.books.forEach(book => {
+                            if (book.category === category.name) {
+                                book.category = 'متفرقة';
+                            }
+                        });
+                        
+                        // حذف التصنيف
+                        const categoryIndex = libraryData.categories.findIndex(c => c.id == categoryId);
+                        if (categoryIndex !== -1) {
+                            libraryData.categories.splice(categoryIndex, 1);
+                        }
+                        
+                        saveData();
+                        loadCategories();
+                        
+                        // تحديث عرض الكتب إذا كنا في تصنيف محذوف
+                        if (currentCategory === category.name) {
+                            currentCategory = 'all';
+                        }
+                        
+                        showNotification('تم حذف التصنيف بنجاح', 'success');
+                        logActivity('delete_category', `حذف تصنيف: ${category.name}`);
+                    }
+                }
+            );
+        }
+
         function filterByCategory(category) {
             currentCategory = category;
             
             // تحديث حالة الأزرار في قسم الكتب
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            if (category === 'all') {
-                const allBtn = Array.from(document.querySelectorAll('.category-btn')).find(btn => btn.textContent.includes('كل الكتب'));
-                if (allBtn) allBtn.classList.add('active');
-            } else {
-                const buttons = document.querySelectorAll('.category-btn');
-                buttons.forEach(btn => {
-                    if (btn.textContent.includes(category)) {
-                        btn.classList.add('active');
-                    }
-                });
-            }
+            updateCategoryFilterGrid();
             
             // تحديث نص التصنيف النشط
             const activeCategorySpan = document.getElementById('activeCategoryCount');
@@ -2963,6 +3467,90 @@
             
             // تحديث إحصائيات لوحة التحكم أيضاً
             loadDashboardCategories();
+        }
+
+        function exportCategoriesToExcel() {
+            if (libraryData.categories.length === 0) {
+                showNotification('لا توجد تصنيفات لتصديرها', 'error');
+                return;
+            }
+            
+            let csvContent = 'اسم التصنيف,الوصف,عدد الكتب,تاريخ الإضافة,أساسي\n';
+            
+            libraryData.categories.forEach(category => {
+                const booksCount = libraryData.books.filter(book => book.category === category.name).length;
+                csvContent += `"${category.name}","${category.description || ''}",${booksCount},"${category.addedDate || ''}","${category.isBase ? 'نعم' : 'لا'}"\n`;
+            });
+            
+            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `categories_${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
+            
+            showNotification('تم تصدير التصنيفات بنجاح', 'success');
+        }
+
+        function printCategories() {
+            const printWindow = window.open('', '_blank');
+            
+            let categoriesHTML = `
+                <div style="padding: 20px;">
+                    <h2 style="color: #1a237e; text-align: center; margin-bottom: 30px;">قائمة التصنيفات - مركز أورنمو القانوني</h2>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                        <thead>
+                            <tr>
+                                <th style="background: #1a237e; color: white; padding: 12px; text-align: right;">اسم التصنيف</th>
+                                <th style="background: #1a237e; color: white; padding: 12px; text-align: right;">الوصف</th>
+                                <th style="background: #1a237e; color: white; padding: 12px; text-align: right;">عدد الكتب</th>
+                                <th style="background: #1a237e; color: white; padding: 12px; text-align: right;">الحالة</th>
+                                <th style="background: #1a237e; color: white; padding: 12px; text-align: right;">تاريخ الإضافة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            libraryData.categories.forEach(category => {
+                const booksCount = libraryData.books.filter(book => book.category === category.name).length;
+                categoriesHTML += `
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${category.name}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${category.description || '-'}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${booksCount}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${category.isBase ? 'أساسي' : 'مضاف'}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${category.addedDate || '-'}</td>
+                    </tr>
+                `;
+            });
+            
+            categoriesHTML += `
+                        </tbody>
+                    </table>
+                    <div style="margin-top: 30px; text-align: center; color: #666;">
+                        <p>إجمالي التصنيفات: ${libraryData.categories.length}</p>
+                        <p>تمت الطباعة في: ${new Date().toLocaleDateString('ar-SA')}</p>
+                    </div>
+                </div>
+            `;
+            
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html dir="rtl" lang="ar">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>قائمة التصنيفات - مركز أورنمو</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 40px; direction: rtl; }
+                        @media print {
+                            body { margin: 20px; }
+                        }
+                    </style>
+                </head>
+                <body>${categoriesHTML}</body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
         }
 
         // ============================================
@@ -3133,6 +3721,7 @@
                 });
                 
                 updateDashboard();
+                loadCategories();
                 
                 logActivity('login', `تسجيل دخول ${currentUser.name}`);
                 
@@ -3176,9 +3765,9 @@
 
         function setupPermissions() {
             const tabs = {
-                'admin': ['dashboard', 'books', 'students', 'borrow', 'professors', 'reports', 'settings'],
-                'professor': ['dashboard', 'books', 'students', 'borrow', 'professors', 'reports'],
-                'student': ['dashboard', 'books', 'borrow', 'reports']
+                'admin': ['dashboard', 'books', 'students', 'borrow', 'professors', 'reports', 'categories', 'settings'],
+                'professor': ['dashboard', 'books', 'students', 'borrow', 'professors', 'reports', 'categories'],
+                'student': ['dashboard', 'books', 'borrow', 'reports', 'categories']
             };
             
             const allowedTabs = tabs[currentUser.role] || [];
@@ -3204,9 +3793,9 @@
             if (!currentUser) return;
             
             const allowedTabs = {
-                'admin': ['dashboard', 'books', 'students', 'borrow', 'professors', 'reports', 'settings'],
-                'professor': ['dashboard', 'books', 'students', 'borrow', 'professors', 'reports'],
-                'student': ['dashboard', 'books', 'borrow', 'reports']
+                'admin': ['dashboard', 'books', 'students', 'borrow', 'professors', 'reports', 'categories', 'settings'],
+                'professor': ['dashboard', 'books', 'students', 'borrow', 'professors', 'reports', 'categories'],
+                'student': ['dashboard', 'books', 'borrow', 'reports', 'categories']
             };
             
             if (!allowedTabs[currentUser.role]?.includes(tabName)) {
@@ -3233,7 +3822,7 @@
             switch(tabName) {
                 case 'dashboard':
                     updateDashboard();
-                    loadDashboardCategories(); // تحديث التصنيفات في لوحة التحكم
+                    loadDashboardCategories();
                     break;
                 case 'books':
                     loadBooks();
@@ -3249,6 +3838,9 @@
                     break;
                 case 'reports':
                     loadDetailedReports();
+                    break;
+                case 'categories':
+                    loadCategories();
                     break;
                 case 'settings':
                     loadSettings();
@@ -3271,7 +3863,7 @@
                     return today > dueDate;
                 }).length,
                 professors: libraryData.professors.length,
-                categories: [...new Set(libraryData.books.map(b => b.category))].length,
+                categories: libraryData.categories.length,
                 completed: libraryData.borrow.filter(b => b.status === 'تم الإرجاع').length,
                 studentBorrows: libraryData.borrow.filter(b => b.borrowerType === 'student').length,
                 professorBorrows: libraryData.borrow.filter(b => b.borrowerType === 'professor').length,
@@ -4012,6 +4604,11 @@
             
             imageDataUrl = null;
             
+            let categoryOptions = '<option value="">اختر التصنيف</option>';
+            libraryData.categories.forEach(category => {
+                categoryOptions += `<option value="${category.name}">${category.name}</option>`;
+            });
+            
             openModal('إضافة كتاب جديد', `
                 <div style="margin: 20px 0;">
                     <div class="image-preview-container" id="bookImagePreviewContainer" style="display: none;">
@@ -4037,21 +4634,7 @@
                             <i class="fas fa-tag"></i> التصنيف القانوني
                         </label>
                         <select id="newBookCategory" class="form-control" required>
-                            <option value="">اختر التصنيف</option>
-                            <option value="الرسائل والأطاريح الجامعية">الرسائل والأطاريح الجامعية</option>
-                            <option value="العلوم السياسية">العلوم السياسية</option>
-                            <option value="القانون العام">القانون العام</option>
-                            <option value="القانون الدولي">القانون الدولي</option>
-                            <option value="القانون الدستوري">القانون الدستوري</option>
-                            <option value="القانون الإداري">القانون الإداري</option>
-                            <option value="القانون التجاري">القانون التجاري</option>
-                            <option value="القانون الجنائي">القانون الجنائي</option>
-                            <option value="القانون المدني">القانون المدني</option>
-                            <option value="القضاء والمحاكم والأحكام القضائية">القضاء والمحاكم والأحكام القضائية</option>
-                            <option value="أصول القانون والفقه القانوني">أصول القانون والفقه القانوني</option>
-                            <option value="حقوق الإنسان والحريات العامة">حقوق الإنسان والحريات العامة</option>
-                            <option value="التشريعات والأنظمة المحلية">التشريعات والأنظمة المحلية</option>
-                            <option value="متفرقة">متفرقة</option>
+                            ${categoryOptions}
                         </select>
                     </div>
                     
@@ -4142,7 +4725,7 @@
             closeModal();
             loadBooks();
             updateDashboard();
-            loadDashboardCategories(); // تحديث التصنيفات في لوحة التحكم
+            loadDashboardCategories();
             
             showNotification('تمت إضافة الكتاب بنجاح', 'success');
             logActivity('add_book', `إضافة كتاب "${title}" (تصنيف: ${category})`);
@@ -4153,6 +4736,11 @@
             if (!book) return;
             
             imageDataUrl = book.imageUrl || null;
+            
+            let categoryOptions = '<option value="">اختر التصنيف</option>';
+            libraryData.categories.forEach(category => {
+                categoryOptions += `<option value="${category.name}" ${book.category === category.name ? 'selected' : ''}>${category.name}</option>`;
+            });
             
             openModal('تعديل كتاب', `
                 <div style="margin: 20px 0;">
@@ -4179,21 +4767,7 @@
                             <i class="fas fa-tag"></i> التصنيف القانوني
                         </label>
                         <select id="editBookCategory" class="form-control" required>
-                            <option value="">اختر التصنيف</option>
-                            <option value="الرسائل والأطاريح الجامعية" ${book.category === 'الرسائل والأطاريح الجامعية' ? 'selected' : ''}>الرسائل والأطاريح الجامعية</option>
-                            <option value="العلوم السياسية" ${book.category === 'العلوم السياسية' ? 'selected' : ''}>العلوم السياسية</option>
-                            <option value="القانون العام" ${book.category === 'القانون العام' ? 'selected' : ''}>القانون العام</option>
-                            <option value="القانون الدولي" ${book.category === 'القانون الدولي' ? 'selected' : ''}>القانون الدولي</option>
-                            <option value="القانون الدستوري" ${book.category === 'القانون الدستوري' ? 'selected' : ''}>القانون الدستوري</option>
-                            <option value="القانون الإداري" ${book.category === 'القانون الإداري' ? 'selected' : ''}>القانون الإداري</option>
-                            <option value="القانون التجاري" ${book.category === 'القانون التجاري' ? 'selected' : ''}>القانون التجاري</option>
-                            <option value="القانون الجنائي" ${book.category === 'القانون الجنائي' ? 'selected' : ''}>القانون الجنائي</option>
-                            <option value="القانون المدني" ${book.category === 'القانون المدني' ? 'selected' : ''}>القانون المدني</option>
-                            <option value="القضاء والمحاكم والأحكام القضائية" ${book.category === 'القضاء والمحاكم والأحكام القضائية' ? 'selected' : ''}>القضاء والمحاكم والأحكام القضائية</option>
-                            <option value="أصول القانون والفقه القانوني" ${book.category === 'أصول القانون والفقه القانوني' ? 'selected' : ''}>أصول القانون والفقه القانوني</option>
-                            <option value="حقوق الإنسان والحريات العامة" ${book.category === 'حقوق الإنسان والحريات العامة' ? 'selected' : ''}>حقوق الإنسان والحريات العامة</option>
-                            <option value="التشريعات والأنظمة المحلية" ${book.category === 'التشريعات والأنظمة المحلية' ? 'selected' : ''}>التشريعات والأنظمة المحلية</option>
-                            <option value="متفرقة" ${book.category === 'متفرقة' ? 'selected' : ''}>متفرقة</option>
+                            ${categoryOptions}
                         </select>
                     </div>
                     
@@ -4295,7 +4869,7 @@
             saveData();
             closeModal();
             loadBooks();
-            loadDashboardCategories(); // تحديث التصنيفات في لوحة التحكم
+            loadDashboardCategories();
             
             showNotification('تم تحديث الكتاب بنجاح', 'success');
             logActivity('edit_book', `تعديل كتاب "${title}"`);
@@ -4314,7 +4888,7 @@
                             saveData();
                             loadBooks();
                             updateDashboard();
-                            loadDashboardCategories(); // تحديث التصنيفات في لوحة التحكم
+                            loadDashboardCategories();
                             
                             showNotification('تم حذف الكتاب بنجاح', 'success');
                             logActivity('delete_book', `حذف كتاب "${bookTitle}"`);
@@ -5490,7 +6064,7 @@
             closeModal();
             loadBorrow();
             updateDashboard();
-            loadDashboardCategories(); // تحديث التصنيفات في لوحة التحكم
+            loadDashboardCategories();
             
             const borrowerTypeName = borrowerType === 'professor' ? 'أستاذ' : 'طالب';
             showNotification('تمت إضافة الإعارة بنجاح', 'success');
@@ -5691,7 +6265,7 @@
             saveData();
             closeModal();
             loadBorrow();
-            loadDashboardCategories(); // تحديث التصنيفات في لوحة التحكم
+            loadDashboardCategories();
             
             showNotification('تم تحديث بيانات الإعارة بنجاح', 'success');
             logActivity('edit_borrow', `تعديل إعارة كتاب "${borrow.bookTitle}"`);
@@ -5729,7 +6303,7 @@
             saveData();
             loadBorrow();
             updateDashboard();
-            loadDashboardCategories(); // تحديث التصنيفات في لوحة التحكم
+            loadDashboardCategories();
             
             const borrowerType = borrow.borrowerType === 'professor' ? 'أستاذ' : 'طالب';
             showNotification('تم إرجاع الكتاب بنجاح', 'success');
@@ -5771,7 +6345,7 @@
                             saveData();
                             loadBorrow();
                             updateDashboard();
-                            loadDashboardCategories(); // تحديث التصنيفات في لوحة التحكم
+                            loadDashboardCategories();
                             
                             showNotification('تم حذف الإعارة بنجاح', 'success');
                             logActivity('delete_borrow', `حذف إعارة كتاب "${borrow.bookTitle}"`);
@@ -5972,6 +6546,7 @@
         function loadSettings() {
             const dataSize = JSON.stringify(libraryData).length;
             document.getElementById('dataSizeInfo').textContent = `${(dataSize / 1024).toFixed(2)} KB`;
+            document.getElementById('systemCategoriesCount').textContent = libraryData.categories.length;
         }
 
         function openDevSettings() {
@@ -6165,7 +6740,7 @@
                 metadata: {
                     exportDate: new Date().toISOString(),
                     exportedBy: currentUser.name,
-                    version: '2.7.0'
+                    version: '3.0.0'
                 }
             };
             
@@ -6207,10 +6782,12 @@
                             function(result) {
                                 if (result) {
                                     libraryData = importedData.libraryData;
+                                    initializeCategories();
                                     saveData();
                                     updateDashboard();
                                     loadTabContent(currentTab);
-                                    loadDashboardCategories(); // تحديث التصنيفات في لوحة التحكم
+                                    loadDashboardCategories();
+                                    loadCategories();
                                     
                                     showNotification('تم استيراد البيانات بنجاح', 'success');
                                     logActivity('import', 'استيراد جميع بيانات النظام');
@@ -6357,13 +6934,16 @@
                             professors: [],
                             borrow: [],
                             activities: [],
+                            categories: [],
                             settings: libraryData.settings
                         };
                         
+                        initializeCategories();
                         saveData();
                         updateDashboard();
                         loadTabContent(currentTab);
-                        loadDashboardCategories(); // تحديث التصنيفات في لوحة التحكم
+                        loadDashboardCategories();
+                        loadCategories();
                         
                         showNotification('تم مسح جميع البيانات بنجاح', 'success');
                         logActivity('reset', 'مسح جميع بيانات النظام');
@@ -7004,10 +7584,10 @@
         // بداية التشغيل
         // ============================================
         console.log('✅ نظام المكتبة القانونية - مركز أورنمو');
-        console.log('📚 الإصدار: 2.7.0 | جميع الحقوق محفوظة');
-        console.log('📖 تم إضافة 15 تصنيفاً قانونياً للبحث والتصنيف');
-        console.log('📊 تم إضافة حقل عدد النسخ للكتب');
-        console.log('🔍 تم إضافة فهرسة وتصفية الكتب حسب التصنيف');
+        console.log('📚 الإصدار: 3.0.0 | جميع الحقوق محفوظة');
+        console.log('📖 نظام إدارة تصنيفات متكامل مع إمكانية إضافة تصنيفات جديدة');
+        console.log('🏠 15 تصنيفاً أساسياً + تصنيفات مضافة');
+        console.log('📊 إحصائيات متقدمة للتصنيفات');
         console.log('🎨 نظام متكامل مع تقارير مفصلة وتصميم متجاوب');
         console.log('📊 نظام استرداد JSON منفصل بدون الحاجة للدخول');
         console.log('📁 إضافة خاصية استيراد JSON للطلاب والأساتذة');
@@ -7016,7 +7596,8 @@
         console.log('👨‍🏫 إضافة إمكانية إعارة الكتب للأساتذة');
         console.log('👤 إضافة المشرفين على التسليم عند الإعارة');
         console.log('📱 تصميم متجاوب يعمل على جميع الأجهزة');
-        console.log('🏠 إضافة التصنيفات القانونية الـ15 في لوحة التحكم');
+        console.log('🏠 إضافة التصنيفات القانونية في لوحة التحكم');
+        console.log('➕ إمكانية إضافة تصنيفات جديدة بسهولة');
         console.log('👤 النظام جاهز للاستخدام');
     </script>
 </body>
